@@ -174,7 +174,7 @@
                         <child>
                           <object class="GtkLabel" id="label4">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">Subred</property>
+                            <property name="label" translatable="yes">Subred (DMX-Hub)</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -220,7 +220,7 @@
                     <child>
                       <object class="GtkLabel" id="label8">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Canal:Valor,Canal:Valor ....</property>
+                        <property name="label" translatable="yes">Canal:Valor,Canal:Valor .... (En decimal)</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>

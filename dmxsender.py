@@ -149,7 +149,7 @@ class threadGui(threading.Thread):
 		
 	def get_canales(self):
 		return self.gui.canales
-	
+
 	def off(self):
 		self.gui.off()
 
@@ -187,6 +187,7 @@ if __name__ == "__main__":
 				ip=IP(dst=gui.get_dst(),src=gui.get_src())
 				udp=UDP(sport=gui.get_sport(),dport=gui.get_dport())
 				artdmx.setfieldval("universe", gui.get_universo())
+				artdmx.setfieldval("subnet", gui.get_subred())
 				payload=dms.build_and_get(gui.get_canales())
 				paquete=ip/udp/artnet/artdmx/payload
 				paquete.display()
@@ -197,12 +198,6 @@ if __name__ == "__main__":
 					except:
 						gui.off()
 			except:
-				ip=""
-				udp=""
-				artnet=""
-				artdmx=""
-				payload=""
-				paquete=""
-				gui.off()
+				raise
 		else:
 			time.sleep(1)
