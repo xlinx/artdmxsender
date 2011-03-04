@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-#       main.py
+#
+#       dmxsender.py
 #       
 #       Copyright 2011 crab <crab@quadebian>
 #       
@@ -165,13 +165,12 @@ class dmsparser:
 			
 	def build_and_get(self,line):
 		self.reset()
-		print "kk"
 		canales_valores=line.split(",")
 		for canal_valor in canales_valores:
 			canal=canal_valor.split(":")[0]
 			valor=chr(int(hex(int(canal_valor.split(":")[1])), 16))
 			self.dmxarray[int(canal)]=valor
-		return ''.join(self.dmxarray).replace("0b","")
+		return ''.join(self.dmxarray)
 		
 	
 if __name__ == "__main__":
