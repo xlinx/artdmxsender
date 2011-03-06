@@ -62,6 +62,28 @@ class DMXSendGUI:
 		self.textview_canal=builder.get_object("textview_canal")
 		self.button_onoff=builder.get_object("button_onoff")
 		self.vbox_principal=builder.get_object("vbox_principal")
+		self.Cexpanders=builder.get_object("expander1")
+		
+		#vamos a liarla parda
+		CVbox=gtk.HBox()
+		self.scales={}
+		for i in range(0,512):
+			self.scales[i]=gtk.VScale()
+			self.scales[i].set_digits(0)
+			self.scales[i].set_range(0, 255)
+			self.scales[i].set_inverted(True)
+			self.scales[i].show()
+			if i < 10:
+				vboz=gtk.VBox()
+				lab=gtk.Label("Canal "+str(i))
+				lab.set_angle(-45)
+				vboz.pack_start(lab, False)
+				vboz.pack_start(self.scales[i], True)
+				CVbox.pack_start(vboz, True, True, 0)
+			
+			
+		self.Cexpanders.add(CVbox)
+		
 		
 		#los eventos (conexiones)
 		self.button_onoff.connect("toggled", self.on, "onoff")
@@ -180,8 +202,8 @@ if __name__ == "__main__":
 	artnet=artdmx.ArtNet()
 	artdmx=artdmx.ArtDMX()
 	dms=dmsparser()
-	while gui.status_gui():
-		if gui.onoff():
+	while True:
+		if gui.status_gui() and gui.onoff():
 			try:
 				print "Start sending"
 				ip=IP(dst=gui.get_dst(),src=gui.get_src())
@@ -197,7 +219,13 @@ if __name__ == "__main__":
 						time.sleep(2)
 					except:
 						gui.off()
+				print "Terminado envio"
 			except:
-				raise
+				print "Algo ha fallado"
+				gui.off()
 		else:
+			if gui.status_gui() == False and gui.onoff() == False:
+				break
 			time.sleep(1)
+			print "-->", gui.status_gui()
+			print "-->", gui.onoff()
