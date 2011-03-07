@@ -40,7 +40,8 @@ class DMXSendGUI:
 		self.puerto_origen=None
 		self.universo=None
 		self.subred=None
-		self.canales=None
+		#self.canales=None
+		self.intervalo=None
 		self.onoff=False
 		self.status=False
 		
@@ -59,10 +60,11 @@ class DMXSendGUI:
 		self.entry_origen=builder.get_object("entry_origen")
 		self.entry_universo=builder.get_object("entry_universo")
 		self.entry_subred=builder.get_object("entry_subred")
-		self.textview_canal=builder.get_object("textview_canal")
+		self.entry_intervalo=builder.get_object("entry_intervalo")
+		#self.textview_canal=builder.get_object("textview_canal")
 		self.button_onoff=builder.get_object("button_onoff")
 		self.vbox_principal=builder.get_object("vbox_principal")
-		self.Cexpanders=builder.get_object("expander1")
+		self.box_control=builder.get_object("box_control")
 		
 		#vamos a liarla parda
 		CVbox=gtk.HBox()
@@ -82,7 +84,7 @@ class DMXSendGUI:
 				CVbox.pack_start(vboz, True, True, 0)
 			
 			
-		self.Cexpanders.add(CVbox)
+		self.box_control.add(CVbox)
 		
 		
 		#los eventos (conexiones)
@@ -90,7 +92,18 @@ class DMXSendGUI:
 
 		gtk.gdk.threads_init()
 		self.win.show_all()
-			
+	def set_scale_value(self, num, value):
+		self.scales[num].set_value(value)
+		
+	def get_scale_value(self, num):
+		return self.scales[num].get_value()
+
+	def get_scale_value_hex(self, num):
+		return chr(int(hex(self.scales[i].get_value()),16))
+
+	def get_intervalo(self):
+		return self.intervalo
+		
 	def start(self):
 		self.status=True
 		gtk.main()
@@ -99,6 +112,7 @@ class DMXSendGUI:
 		self.status=False
 		self.onoff=False
 		gtk.main_quit()
+	
 
 	def on(self,widget=None, data=None):
 		if widget.get_active() == True:
@@ -111,13 +125,14 @@ class DMXSendGUI:
 			
 				self.universo=self.entry_universo.get_text()
 				self.subred=self.entry_subred.get_text()
+				self.intervalo=self.entry_intervalo.get_text()
 			
-				buff=self.textview_canal.get_buffer()
-				inicio=buff.get_start_iter()
-				fin=buff.get_end_iter()
+				#buff=self.textview_canal.get_buffer()
+				#inicio=buff.get_start_iter()
+				#fin=buff.get_end_iter()
 			
-				self.canales=buff.get_text(inicio,fin,False)
-				print self.canales
+				#self.canales=buff.get_text(inicio,fin,False)
+				#print self.canales
 				self.vbox_principal.set_sensitive(False)
 				self.onoff=True
 			except:
@@ -171,27 +186,45 @@ class threadGui(threading.Thread):
 		
 	def get_canales(self):
 		return self.gui.canales
+	
+	def set_scale_value(self, num, value):
+		return self.gui.scales[num].set_value(value)
+		
+	def get_scale_value(self, num):
+		return self.gui.scales[num].get_value()
+
+	def get_scale_value_hex(self, num):
+		return chr(int(hex(self.gui.scales[i].get_value()),16))
+
+	def get_intervalo(self):
+		return float(self.gui.intervalo)
+		
 
 	def off(self):
 		self.gui.off()
 
 
 class dmsparser:
-	def __init__(self):
+	gui=None
+	def __init__(self,thegui):
 		self.dmxarray=[]
+		gui=thegui
+		self.reset()
 		
 	def reset(self):
 		self.dmxarray=[]
 		for i in range(512):
 			self.dmxarray.append(chr(int(hex(0),16)))
 			
-	def build_and_get(self,line):
-		self.reset()
-		canales_valores=line.split(",")
-		for canal_valor in canales_valores:
-			canal=canal_valor.split(":")[0]
-			valor=chr(int(hex(int(canal_valor.split(":")[1])), 16))
-			self.dmxarray[int(canal)]=valor
+	def get_values(self):
+		#self.reset()
+
+		for i in range(512):
+			#canal=canal_valor.split(":")[0]
+			#valor=chr(int(hex(int(canal_valor.split(":")[1])), 16))
+			valor=int(gui.get_scale_value(i))
+			
+			self.dmxarray[int(i)]=chr(int(hex(valor),16))
 		return ''.join(self.dmxarray)
 		
 	
@@ -201,7 +234,7 @@ if __name__ == "__main__":
 	
 	artnet=artdmx.ArtNet()
 	artdmx=artdmx.ArtDMX()
-	dms=dmsparser()
+	dms=dmsparser(gui)
 	while True:
 		if gui.status_gui() and gui.onoff():
 			try:
@@ -210,19 +243,20 @@ if __name__ == "__main__":
 				udp=UDP(sport=gui.get_sport(),dport=gui.get_dport())
 				artdmx.setfieldval("universe", gui.get_universo())
 				artdmx.setfieldval("subnet", gui.get_subred())
-				payload=dms.build_and_get(gui.get_canales())
-				paquete=ip/udp/artnet/artdmx/payload
-				paquete.display()
 				while gui.onoff():
 					try:
+						payload=dms.get_values()
+						paquete=ip/udp/artnet/artdmx/payload
+						paquete.display()
 						send(paquete)
-						time.sleep(2)
+						time.sleep(gui.get_intervalo())
 					except:
 						gui.off()
 				print "Terminado envio"
 			except:
 				print "Algo ha fallado"
 				gui.off()
+				raise
 		else:
 			if gui.status_gui() == False and gui.onoff() == False:
 				break
