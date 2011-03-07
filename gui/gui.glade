@@ -15,58 +15,15 @@
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkHBox" id="hbox6">
+                  <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label5">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">ArtDMX Sender</property>
-                        <attributes>
-                          <attribute name="scale" value="2,000000"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="padding">10</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkVBox" id="vbox3">
-                        <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkLabel" id="label7">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">&lt;big&gt;&lt;big&gt;&lt;b&gt;v0.1&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label6">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">          By J.A. Nache
-&lt;nache.nache@gmail.com&gt;</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="padding">7</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="label" translatable="yes">ArtDMX Sender</property>
+                    <attributes>
+                      <attribute name="scale" value="2,000000"/>
+                    </attributes>
                   </object>
                   <packing>
-                    <property name="padding">22</property>
+                    <property name="padding">10</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -274,7 +231,7 @@
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkRadioButton" id="send_mode">
-                        <property name="label" translatable="yes">Modo Interactivo</property>
+                        <property name="label" translatable="yes">Modo cont&#xED;nuo</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -287,7 +244,7 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="radiobutton2">
-                        <property name="label" translatable="yes">Enviar en intervalos</property>
+                        <property name="label" translatable="yes">Modo interactivo</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -303,9 +260,6 @@
                   <packing>
                     <property name="position">1</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -342,6 +296,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">&#x2022;</property>
+                    <property name="text" translatable="yes">0,1,2,3,4,5,6,7</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
