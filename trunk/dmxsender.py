@@ -61,45 +61,91 @@ class DMXSendGUI:
 		self.entry_universo=builder.get_object("entry_universo")
 		self.entry_subred=builder.get_object("entry_subred")
 		self.entry_intervalo=builder.get_object("entry_intervalo")
+		self.entry_canales=builder.get_object("entry_canales")
 		#self.textview_canal=builder.get_object("textview_canal")
 		self.button_onoff=builder.get_object("button_onoff")
 		self.vbox_principal=builder.get_object("vbox_principal")
 		self.box_control=builder.get_object("box_control")
 		
 		#vamos a liarla parda
-		CVbox=gtk.HBox()
-		self.scales={}
+		
+		self.vscales={}
+		self.containers={}
 		for i in range(0,512):
-			self.scales[i]=gtk.VScale()
-			self.scales[i].set_digits(0)
-			self.scales[i].set_range(0, 255)
-			self.scales[i].set_inverted(True)
-			self.scales[i].show()
-			if i < 10:
-				vboz=gtk.VBox()
-				lab=gtk.Label("Canal "+str(i))
-				lab.set_angle(-45)
-				vboz.pack_start(lab, False)
-				vboz.pack_start(self.scales[i], True)
-				CVbox.pack_start(vboz, True, True, 0)
-			
-			
-		self.box_control.add(CVbox)
-		
-		
+			self.vscales[i]=0
+
+		self.show_channels()
+
 		#los eventos (conexiones)
 		self.button_onoff.connect("toggled", self.on, "onoff")
-
+		#self.entry_canales.connect("insert_text", self.change_channels)
+		self.entry_canales.connect("activate", self.change_channels)
+		
 		gtk.gdk.threads_init()
 		self.win.show_all()
+
+	def on_scale_change_value(self, widget, scroll, value, channel):
+		value=int(value)
+		if value <= 255 and value >=0: 
+			print "canal", channel, "valor", value
+			self.set_scale_value(channel, value)
+		widget.set_value(value)
+		return True
+
+	def change_channels(self, entry, character="", numberof=None, gpointer=None):
+		self.show_channels(entry.get_text()+character)
+		return False
+
+	def show_channels(self,entry=None):
+		if entry == None:
+			canales=self.entry_canales.get_text().split(",")
+		else:
+			canales=entry.split(",")
+			
+		try:
+			self.CVbox.destroy()
+		except:
+			pass
+			
+		try:
+			self.CVbox=gtk.HBox()
+			self.CVbox.show()
+			
+			print canales
+			for i in canales:
+				i=int(i)
+				vboz=gtk.VBox()
+				vboz.show()
+				lab=gtk.Label("Canal "+str(i))
+				lab.show()
+				lab.set_angle(-45)
+				vboz.pack_start(lab, False)
+				
+				vscale=gtk.VScale()
+				vscale.set_digits(0)
+				vscale.set_range(0, 255)
+				vscale.set_inverted(True)
+				vscale.set_value(self.vscales[i])
+				vscale.connect('change-value', self.on_scale_change_value, i)
+				
+				vboz.pack_start(vscale, True)
+				vscale.show()
+				self.CVbox.pack_start(vboz, True, True, 0)
+			self.box_control.add(self.CVbox)
+		except:
+			self.CVbox.destroy()
+			print "Posiblemente sintáxis incorecta. Funcionamiento normal, se ignora."
+		
+		
+
 	def set_scale_value(self, num, value):
-		self.scales[num].set_value(value)
+		self.vscales[num]=value
 		
 	def get_scale_value(self, num):
-		return self.scales[num].get_value()
+		return self.vscales[num]
 
 	def get_scale_value_hex(self, num):
-		return chr(int(hex(self.scales[i].get_value()),16))
+		return chr(int(hex(self.vscales[num]),16))
 
 	def get_intervalo(self):
 		return self.intervalo
@@ -188,13 +234,13 @@ class threadGui(threading.Thread):
 		return self.gui.canales
 	
 	def set_scale_value(self, num, value):
-		return self.gui.scales[num].set_value(value)
+		return gui.set_scale_value(num, value)
 		
 	def get_scale_value(self, num):
-		return self.gui.scales[num].get_value()
+		return self.gui.get_scale_value(num)
 
 	def get_scale_value_hex(self, num):
-		return chr(int(hex(self.gui.scales[i].get_value()),16))
+		return chr(int(hex(self.gui.get_scale_value_hex(num)),16))
 
 	def get_intervalo(self):
 		return float(self.gui.intervalo)
@@ -261,5 +307,3 @@ if __name__ == "__main__":
 			if gui.status_gui() == False and gui.onoff() == False:
 				break
 			time.sleep(1)
-			print "-->", gui.status_gui()
-			print "-->", gui.onoff()
